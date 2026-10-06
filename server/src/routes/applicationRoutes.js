@@ -1,0 +1,4 @@
+import express from 'express';import {auth} from '../middleware/auth.js';import Application from '../models/Application.js';
+const router=express.Router();router.use(auth);
+router.post('/',async(req,res)=>{try{const application=await Application.create({user:req.user._id,job:req.body.jobId});res.status(201).json({application});}catch(e){if(e.code===11000)return res.status(409).json({message:'Already applied'});res.status(500).json({message:e.message})}});
+router.get('/',async(req,res)=>res.json({applications:await Application.find({user:req.user._id}).populate('job').sort({createdAt:-1})}));export default router;
